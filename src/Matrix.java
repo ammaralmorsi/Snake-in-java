@@ -1,56 +1,56 @@
-public class Matrix implements Addable<Matrix> {
-    protected int[][] matrix;
-    protected int rows;
-    protected int columns;
 
-    public Matrix(int rows, int columns) {
+
+public class Matrix<T> {
+    protected T[][] numbers;
+    protected int rows;
+    protected int cols;
+
+    public Matrix(int rows, int cols) {
         this.rows = rows;
-        this.columns = columns;
-        this.matrix = new int[rows][columns];
+        this.cols = cols;
+        numbers = (T[][]) new Object[rows][cols];
     }
 
-    public void setNumbers(int[] numbers) {
-        int i = 0;
-        for (int row = 0; row < this.rows; row++) {
-            for (int column = 0; column < this.columns; column++) {
-                this.matrix[row][column] = numbers[i];
-                i++;
+    public boolean setNumbers(T[] numbers) {
+        if (!isCorrectDimensions(numbers))
+            return false;
+        _setNumbers(numbers);
+        return true;
+    }
+
+    protected void _setNumbers(T[] numbers) {
+        int index = 0;
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                this.numbers[i][j] = numbers[index];
+                index++;
             }
         }
     }
 
+    protected boolean isCorrectDimensions(T[] numbers) {
+        return numbers.length == rows * cols;
+    }
+
     public void print() {
-        for (int row = 0; row < this.rows; row++) {
-            for (int column = 0; column < this.columns; column++) {
-                System.out.print(this.matrix[row][column] + " ");
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                System.out.print(numbers[i][j] + " ");
             }
             System.out.println();
         }
     }
 
     public void transpose() {
-        int[][] newMatrix = new int[this.columns][this.rows];
-        for (int row = 0; row < this.rows; row++) {
-            for (int column = 0; column < this.columns; column++) {
-                newMatrix[column][row] = this.matrix[row][column];
+        T[][] transposed = (T[][]) new Object[cols][rows];
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                transposed[j][i] = numbers[i][j];
             }
         }
-        this.matrix = newMatrix;
-        int temp = this.rows;
-        this.rows = this.columns;
-        this.columns = temp;
-    }
-
-    @Override
-    public Matrix add(Matrix other) {
-        if (this.rows != other.rows || this.columns != other.columns) {
-            return null;
-        }
-        for (int row = 0; row < this.rows; row++) {
-            for (int column = 0; column < this.columns; column++) {
-                this.matrix[row][column] = this.matrix[row][column] + other.matrix[row][column];
-            }
-        }
-        return this;
+        numbers = transposed;
+        int temp = rows;
+        rows = cols;
+        cols = temp;
     }
 }
